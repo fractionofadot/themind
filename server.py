@@ -116,6 +116,20 @@ class Game(object):
 		print("levels: ", self.levels)
 		print("deck: ", self.deck)
 
+	def getGameStateJSON(self):
+		json = {
+			"id": self.id,
+			"players": self.players,
+			"lives": self.lives,
+			"stars": self.stars,
+			"levels": self.levels,
+			"level": self.level,
+			"blind": self.blind,
+		}
+
+		print(json)
+
+
 	def dealNext(self):
 		"""
 		In the first round (level 1) each player receives 1 card, 
@@ -135,5 +149,5 @@ g = Game(random.choice([2,3,4]))
 g.printGameInfo()
 
 for i in range(1,15):
-	print( g.nextLevel(), g.blind, g.lives, g.stars )
+	print( g.nextLevel(), g.getGameStateJSON() )
 
