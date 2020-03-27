@@ -7,4 +7,4 @@ Users will be able to visit the site from any browser and join or start a game w
 The server code is written in Python. There is a `Game` class which stores the game state.
 
 # Client
-The client is written in html and javascript, fetching from the server for game state.
+The client is written in html and javascript, posting and getting game state from the server.
