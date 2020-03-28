@@ -145,9 +145,4 @@ class Game(object):
 			return False
 	
 
-g = Game(random.choice([2,3,4]))
-g.printGameInfo()
-
-for i in range(1,15):
-	print( g.nextLevel(), g.getGameStateJSON() )
 
