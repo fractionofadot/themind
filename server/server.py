@@ -13,20 +13,13 @@ PlayerDB = []
 GameDB = []
 
 def main():
-	# Each record consists of id, ip_addr, and name
+	# {id : pid, ip : ip_addr, name : name}
 	PlayerDB = loadPlayerDB()
 
-	# Each record consists of an ID and a Game() object
+	# {id: Game() object}
 	GameDB = loadGameDB()
 
-	try:
-		remote_ip = cgi.escape( os.environ['REMOTE_ADDR'] )
-	except:
-		remote_ip = None
-
-	pid = getPlayerId()
-
-	jsonHeader()
+	performAction()
 
 def identifyUser():
 	pass
@@ -50,36 +43,58 @@ def sendError(msg):
 
 def performAction():
 	form = cgi.FieldStorage()
+	print(form)
 
 	action = form.getfirst("action", None)
 	game_id = form.getfirst("game", None)
-	players = form.getfirst("players", None)
+	players = form.getfirst("players", 0)
 	name = form.getfirst("name", None)
 
-	if not (2 <= players <= 4):
-		sendError("Invalid value for players. Valid values are 2-4")
+	game = None
 
 	if game_id:
 		if not any(game_id in row for row in GameDB):
 			sendError("No game found with that ID")
 			return False
-
-	game = GameDB[game_id]
+		game = GameDB[game_id]
+		
 
 	valid_actions = ["playCard", "newGame", "playStar", "getState", "joinGame"]
 
+	# START A NEW GAME
 	if action == "newGame":
-		newGame()
+		if not (2 <= players <= 4):
+			sendError("Invalid value for players. Valid values are 2-4")
+			return False
+
+		if not name:
+			sendError("name is required to start a new game.")
+			return False
+
+		newGame(players, name)
+
+	# JOIN A GAME	
 	elif action == "joinGame":
-		joinGame(game)
+		if game:
+			joinGame(game)
+
+	# PLAY A CARD	
 	elif action == "playCard":
-		playCard(game)
+		if game:
+			playCard(game)
+
+	# PLAY A STAR CARD
 	elif action == "playStar":
-		playStar(game)
+		if game:
+			playStar(game)
+
+	# GET THE GAME STATE
 	elif action == "getState":
-		getState(game)
+		if game:
+			getState(game)
+
 	else:
-		print(json.dumps({"error":'A valid action must be specified: {}'.format(valid_actions)}))
+		print(json.dumps({"error":'A valid action must be specified: {}'.format(", ".join(valid_actions) ) }))
 		return False
 
 def newGame(number_of_players, name):
