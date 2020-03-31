@@ -109,9 +109,7 @@ def performAction():
 
 def newGame(number_of_players, name):
 	game = Game(number_of_players)
-	GameDB.append({
-		str(game.id) : game
-	})
+	GameDB[game.id] = game
 
 	with open(gdb_file_path, "wb") as file:
 		pickle.dump(GameDB, file)
