@@ -20,7 +20,7 @@ def main():
 	PlayerDB = loadPlayerDB()
 
 	# {id: Game() object}
-	GameDB = loadGameDB()
+	loadGameDB()
 
 	performAction()
 
@@ -33,11 +33,11 @@ def loadPlayerDB():
 def loadGameDB():
 	try:
 		with open(gdb_file_path, "rb") as f:
-			return pickle.load(f)
+			GameDB = pickle.load(f)
 	except FileNotFoundError:
 		with open(gdb_file_path, "wb") as f:
 			pickle.dump({}, f)
-		return {}
+		GameDB = {}
 
 def sendError(msg):
 	jsonHeader()
