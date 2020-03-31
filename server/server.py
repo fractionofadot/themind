@@ -22,8 +22,6 @@ def main():
 	# {id: Game() object}
 	GameDB = loadGameDB()
 
-	jsonHeader()
-
 	performAction()
 
 def identifyUser():
@@ -42,6 +40,7 @@ def loadGameDB():
 		return []
 
 def sendError(msg):
+	jsonHeader()
 	print( json.dumps({"error" : msg}) )
 
 def performAction():
@@ -105,7 +104,7 @@ def performAction():
 			getState(game)
 
 	else:
-		print(json.dumps({"error":'A valid action must be specified: {}'.format(", ".join(valid_actions) ) }))
+		sendError('A valid action must be specified: {}'.format(", ".join(valid_actions) ) )
 		return False
 
 def newGame(number_of_players, name):
@@ -114,13 +113,19 @@ def newGame(number_of_players, name):
 		str(game.id) : game
 	})
 
+	with open(gdb_file_path, "wb") as file:
+		pickle.dump(GameDB, file)
+
+	jsonHeader()
 	game.printStateJSON()
 
 def getState(game):
+	jsonHeader()
 	game.printStateJSON()
 
 def playCard(game, player):
 	result = game.playCard(player)
+	jsonHeader()
 	game.printStateJSON()
 	return result
 
