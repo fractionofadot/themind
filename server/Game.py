@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
+import json
+from time import time
 import random
 import string
-import json
+
 
 class Game(object):
 	"""	
@@ -72,7 +74,7 @@ class Game(object):
 		if self.lives > 1:
 			self.lives = self.lives - 1
 		else:
-			gameOver(2)
+			self.gameOver(2)
 
 		return self.lives
 
@@ -118,7 +120,7 @@ class Game(object):
 			if next_level < (100 / self.players):
 				self.level = next_level
 			else:
-				gameOver(1)
+				self.gameOver(1)
 				return False
 		
 		self.dealHands()
@@ -134,7 +136,9 @@ class Game(object):
 			"level": self.level,
 			"blind": self.blind,
 			"discard" : self.discard,
-			"pile" : self.pile
+			"pile" : self.pile,
+			"result" : self.result,
+			"timestamp" : time()
 		}
 
 		print(json.dumps(cs))
@@ -184,6 +188,8 @@ class Game(object):
 			else:
 				self.pile.append( self.hands[idx].pop(0) )
 				if self._allHandsEmpty():
+					self.pile = []
+					self.discard = []
 					self.nextLevel()
 				return True
 		else:
@@ -200,9 +206,13 @@ class Game(object):
 
 	def _discardLower(self, value):
 		for i in range(len(self.hands)):
+			pop_idx = []
 			for j in range(len(self.hands[i])):
 				if self.hands[i][j] < value:
-					self.discard.append( self.hands[i].pop(j) )
+					self.discard.append( self.hands[i][j] )
+					pop_idx.append(j)
+			for j in range(len(pop_idx)):
+				self.hands[i].pop(j)
 		if self._allHandsEmpty():
 			self.nextLevel()
 

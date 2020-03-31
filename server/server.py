@@ -65,7 +65,7 @@ def performAction():
 		game = GameDB[game_id]
 		
 
-	valid_actions = ["playCard", "newGame", "playStar", "getState", "joinGame"]
+	valid_actions = ["playCard", "newGame", "playStar", "getState", "joinGame", "getHand"]
 
 	# START A NEW GAME
 	if action == "newGame":
@@ -86,6 +86,11 @@ def performAction():
 		else:
 			sendError("No game specified")
 			return False
+
+	# GET A HAND
+	elif action == "getHand":
+		if game:
+			getHand(game,player_idx)
 
 	# PLAY A CARD	
 	elif action == "playCard":
@@ -118,7 +123,7 @@ def performAction():
 
 def newGame(number_of_players, name):
 	global GameDB
-	
+
 	game = Game(number_of_players)
 	GameDB[game.id] = game
 
@@ -131,6 +136,14 @@ def newGame(number_of_players, name):
 def getState(game):
 	jsonHeader()
 	game.printStateJSON()
+
+def getHand(game, player_idx):
+	result = game.getHand(player_idx)
+	if result:
+		jsonHeader()
+		print( json.dumps( {player_idx : result} ) )
+		return True
+	return False
 
 def playCard(game, player_idx):
 	result = game.playCard(player_idx)
