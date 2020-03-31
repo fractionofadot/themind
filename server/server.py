@@ -9,11 +9,11 @@ import pickle
 
 from Game import Game
 
-PlayerDB = []
-GameDB = []
+PlayerDB = {}
+GameDB = {}
 
-gdb_file_path = "gdb"
-pdb_file_path = "pdb"
+gdb_file_path = "db/gdb"
+pdb_file_path = "db/pdb"
 
 def main():
 	# {id : pid, ip : ip_addr, name : name}
@@ -28,7 +28,7 @@ def identifyUser():
 	pass
 
 def loadPlayerDB():
-	return []
+	return {}
 
 def loadGameDB():
 	try:
@@ -36,8 +36,8 @@ def loadGameDB():
 			return pickle.load(f)
 	except FileNotFoundError:
 		with open(gdb_file_path, "wb") as f:
-			pickle.dump([], f)
-		return []
+			pickle.dump({}, f)
+		return {}
 
 def sendError(msg):
 	jsonHeader()
