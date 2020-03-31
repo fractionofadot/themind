@@ -38,6 +38,11 @@ def loadGameDB():
 			pickle.dump({}, f)
 		GameDB = {}
 
+def saveGDB():
+	global GameDB
+	with open(gdb_file_path, "wb") as file:
+		pickle.dump(GameDB, file)
+
 def sendError(msg):
 	jsonHeader()
 	print( json.dumps({"error" : msg}) )
@@ -49,6 +54,7 @@ def performAction():
 	game_id = form.getfirst("game", None)
 	players = int(form.getfirst("players", 0))
 	name = form.getfirst("name", None)
+	player_idx = int( form.getfirst("player_idx", -1) )
 
 	game = None
 
@@ -84,9 +90,13 @@ def performAction():
 	# PLAY A CARD	
 	elif action == "playCard":
 		if game:
-			playCard(game)
+			if not playCard(game, player_idx):
+				sendError("Card cannot be played: either the payer has no cards, or player_idx out of bounds")
+				return False
+			else:
+				saveGDB()
 		else:
-			sendError("No game specified")
+			sendError("playCard requires a game id and player index")
 			return False
 
 	# PLAY A STAR CARD
@@ -107,6 +117,8 @@ def performAction():
 		return False
 
 def newGame(number_of_players, name):
+	global GameDB
+	
 	game = Game(number_of_players)
 	GameDB[game.id] = game
 
@@ -120,10 +132,11 @@ def getState(game):
 	jsonHeader()
 	game.printStateJSON()
 
-def playCard(game, player):
-	result = game.playCard(player)
-	jsonHeader()
-	game.printStateJSON()
+def playCard(game, player_idx):
+	result = game.playCard(player_idx)
+	if result:
+		jsonHeader()
+		game.printStateJSON()
 	return result
 
 def playStar():

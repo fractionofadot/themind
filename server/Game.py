@@ -169,6 +169,8 @@ class Game(object):
 		return True
 
 	def playCard(self, idx):
+		if not (0 <= idx <= self.players - 1):
+			return False
 		if len(self.hands[idx]) > 0:	
 			card = min(self.hands[idx])
 
@@ -176,7 +178,9 @@ class Game(object):
 				self.loseLife()
 				self._discardLower(card)
 				self.discard.append( self.hands[idx].pop(0) )
-				return False
+				if self._allHandsEmpty():
+					self.nextLevel()
+				return True
 			else:
 				self.pile.append( self.hands[idx].pop(0) )
 				if self._allHandsEmpty():
@@ -195,7 +199,6 @@ class Game(object):
 		return self.hands[idx]
 
 	def _discardLower(self, value):
-		print("discard lower:", value, len(self.hands))
 		for i in range(len(self.hands)):
 			for j in range(len(self.hands[i])):
 				if self.hands[i][j] < value:
