@@ -12,12 +12,17 @@ from Game import Game
 PlayerDB = []
 GameDB = []
 
+gdb_file_path = "gdb"
+pdb_file_path = "pdb"
+
 def main():
 	# {id : pid, ip : ip_addr, name : name}
 	PlayerDB = loadPlayerDB()
 
 	# {id: Game() object}
 	GameDB = loadGameDB()
+
+	jsonHeader()
 
 	performAction()
 
@@ -28,8 +33,6 @@ def loadPlayerDB():
 	return []
 
 def loadGameDB():
-	gdb_file_path = "gdb"
-
 	try:
 		with open(gdb_file_path, "rb") as f:
 			return pickle.load(f)
@@ -43,11 +46,10 @@ def sendError(msg):
 
 def performAction():
 	form = cgi.FieldStorage()
-	print(form)
 
 	action = form.getfirst("action", None)
 	game_id = form.getfirst("game", None)
-	players = form.getfirst("players", 0)
+	players = int(form.getfirst("players", 0))
 	name = form.getfirst("name", None)
 
 	game = None
@@ -77,16 +79,25 @@ def performAction():
 	elif action == "joinGame":
 		if game:
 			joinGame(game)
+		else:
+			sendError("No game specified")
+			return False
 
 	# PLAY A CARD	
 	elif action == "playCard":
 		if game:
 			playCard(game)
+		else:
+			sendError("No game specified")
+			return False
 
 	# PLAY A STAR CARD
 	elif action == "playStar":
 		if game:
 			playStar(game)
+		else:
+			sendError("No game specified")
+			return False
 
 	# GET THE GAME STATE
 	elif action == "getState":
@@ -103,7 +114,6 @@ def newGame(number_of_players, name):
 		str(game.id) : game
 	})
 
-	jsonHeader()
 	game.printStateJSON()
 
 def getState(game):

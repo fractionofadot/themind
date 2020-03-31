@@ -134,8 +134,7 @@ class Game(object):
 			"level": self.level,
 			"blind": self.blind,
 			"discard" : self.discard,
-			"pile" : self.pile,
-			"hands" : self.hands
+			"pile" : self.pile
 		}
 
 		print(json.dumps(cs))
