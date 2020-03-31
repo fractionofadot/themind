@@ -117,6 +117,7 @@ def newGame(number_of_players, name):
 
 	jsonHeader()
 	game.printStateJSON()
+	print(GameDB.keys())
 
 def getState(game):
 	jsonHeader()
