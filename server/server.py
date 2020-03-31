@@ -18,9 +18,7 @@ pdb_file_path = "db/pdb"
 def main():
 	# {id : pid, ip : ip_addr, name : name}
 	PlayerDB = loadPlayerDB()
-
-	# {id: Game() object}
-	loadGameDB()
+	GameDB = loadGameDB()
 
 	performAction()
 
@@ -31,9 +29,10 @@ def loadPlayerDB():
 	return {}
 
 def loadGameDB():
+	global GameDB
 	try:
-		with open(gdb_file_path, "rb") as f:
-			GameDB = pickle.load(f)
+		with open(gdb_file_path, "rb") as file:
+			GameDB = pickle.load(file)
 	except FileNotFoundError:
 		with open(gdb_file_path, "wb") as f:
 			pickle.dump({}, f)
@@ -56,7 +55,6 @@ def performAction():
 	if game_id:
 		if game_id not in GameDB.keys():
 			sendError("No game found with that ID: {}".format(game_id))
-			print(GameDB.keys())
 			return False
 		game = GameDB[game_id]
 		
@@ -117,7 +115,6 @@ def newGame(number_of_players, name):
 
 	jsonHeader()
 	game.printStateJSON()
-	print(GameDB.keys())
 
 def getState(game):
 	jsonHeader()
