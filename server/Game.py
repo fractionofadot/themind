@@ -2,6 +2,7 @@
 
 import random
 import string
+import json
 
 class Game(object):
 	"""	
@@ -25,9 +26,12 @@ class Game(object):
 		self.position = 0
 		self.level = 1
 		self.blind = False
-		self.hands = [] * number_of_players
+		self.hands = [[] for i in range(number_of_players)]
+		self.pile = []
+		self.discard = []
+		self.result = 0
 
-		random.shuffle(self.deck)
+		self.dealHands()
 
 	def getId(self):
 		return self.id
@@ -54,13 +58,12 @@ class Game(object):
 
 		Next, all the players refocus and the game continues. 
 		"""
-		if (self.stars > 1):
+		if (self.stars >= 1):
 			self.stars = self.stars - 1
+			self._discardLowestInEachHand()
+			return self.stars
 		else:
-			self.stars = 0
-
-		return self.stars
-
+			return False
 
 	def refocus(self):
 		pass	 
@@ -69,12 +72,12 @@ class Game(object):
 		if self.lives > 1:
 			self.lives = self.lives - 1
 		else:
-			gameOver()
+			gameOver(2)
 
 		return self.lives
 
-	def gameOver(self):
-		pass
+	def gameOver(self, num):
+		self.result = num
 
 	def nextLevel(self):
 		"""
@@ -88,36 +91,41 @@ class Game(object):
 
 		If a player has made a mistake, this costs one life. The remaining rules are unchanged. 
 		How many levels can the team complete blind?
+
 		"""
+
+		if self.result == 2: 
+			return False
+
+		next_level = self.level + 1
+
 		if (not self.blind):
+			# Rewards
 			if (self.level in [2,5,8]):
 				self.addStar()
 			elif (self.level in [3,6,9]):
 				self.addLife()
 
-			nextLevel = self.level + 1
-
-			if (1 <= nextLevel <= self.levels):
-				self.level = nextLevel;
-				return self.level
+			if (1 <= next_level <= self.levels):
+				self.level = next_level;
 			else:
+				# The players have moved on to blind mode
 				self.blind = True
 				self.level = 1
-				return self.level
-		else:
-			self.level = self.level + 1
-			return self.level
 
-	def printGameInfo(self):
-		print("id: ", self.id) 
-		print("players: ", self.players) 
-		print("lives: ", self.lives)
-		print("stars: ", self.stars)
-		print("levels: ", self.levels)
-		print("deck: ", self.deck)
+		# In Blind Mode, so level limit is 100 / self.players
+		else: 
+			if next_level < (100 / self.players):
+				self.level = next_level
+			else:
+				gameOver(1)
+				return False
+		
+		self.dealHands()
+		return self.level
 
-	def getGameStateJSON(self):
-		json = {
+	def printStateJSON(self):
+		cs = {
 			"id": self.id,
 			"players": self.players,
 			"lives": self.lives,
@@ -125,12 +133,15 @@ class Game(object):
 			"levels": self.levels,
 			"level": self.level,
 			"blind": self.blind,
+			"discard" : self.discard,
+			"pile" : self.pile,
+			"hands" : self.hands
 		}
 
-		print(json)
+		print(json.dumps(cs))
 
 
-	def dealNext(self):
+	def nextHand(self):
 		"""
 		In the first round (level 1) each player receives 1 card, 
 		in the second round (level 2) they receive 2 cards, and so on. 
@@ -145,4 +156,75 @@ class Game(object):
 			return False
 	
 
+	def dealHands(self):
+		random.shuffle(self.deck)
+		self.position = 0
+		for i in range(self.players):
+			cards = self.nextHand()
+			if cards:
+				self.hands[i] = sorted(cards)
+			else:
+				return False
+				self.gameOver()
 
+		return True
+
+	def playCard(self, idx):
+		if len(self.hands[idx]) > 0:	
+			card = min(self.hands[idx])
+
+			if card > self._lowestCard():
+				self.loseLife()
+				self._discardLower(card)
+				self.discard.append( self.hands[idx].pop(0) )
+				return False
+			else:
+				self.pile.append( self.hands[idx].pop(0) )
+				if self._allHandsEmpty():
+					self.nextLevel()
+				return True
+		else:
+			return False
+
+	def _lowestCard(self):
+		hl = []
+		for hand in self.hands:
+			hl += hand
+		return min(hl)
+
+	def getHand(self, idx):
+		return self.hands[idx]
+
+	def _discardLower(self, value):
+		print("discard lower:", value, len(self.hands))
+		for i in range(len(self.hands)):
+			for j in range(len(self.hands[i])):
+				if self.hands[i][j] < value:
+					self.discard.append( self.hands[i].pop(j) )
+		if self._allHandsEmpty():
+			self.nextLevel()
+
+	def _discardLowestInEachHand(self):
+		for i in range(len(self.hands)):
+			if len(self.hands[i] == 0): 
+				continue
+			hand_min = min(self.hands[i])
+			hand_min_idx = self.hands[i].index(hand_min)
+			self.discard.append( self.hands[i].pop(hand_min_idx) )
+
+	def _allHandsEmpty(self):
+		count = 0
+		for hand in self.hands:
+			if len(hand) == 0:
+				count = count + 1
+		if count == self.players:
+			return True
+		return False
+
+# from Game import Game
+# g = Game(4)
+# g.state()
+# g.playCard(0)
+# g.state()
+# g.playCard(0)
+# g.state()
