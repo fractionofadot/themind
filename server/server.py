@@ -56,6 +56,7 @@ def performAction():
 	if game_id:
 		if game_id not in GameDB.keys():
 			sendError("No game found with that ID: {}".format(game_id))
+			print(GameDB.keys())
 			return False
 		game = GameDB[game_id]
 		
