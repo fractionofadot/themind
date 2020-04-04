@@ -48,13 +48,19 @@ def sendError(msg):
 	print( json.dumps({"error" : msg}) )
 
 def performAction():
+	post_data = cgi.FieldStorage()
+
+	for key in post_data.keys():
+		print(key, post_data[key])
+
 	form = cgi.FieldStorage()
 
-	action = form.getfirst("action", None)
-	game_id = form.getfirst("game", None)
+	action = form.getfirst("action", "").lower()
+	game_id = form.getfirst("game", "").upper()
 	players = int(form.getfirst("players", 0))
 	name = form.getfirst("name", None)
 	player_idx = int( form.getfirst("player_idx", -1) )
+	timecode = form.getfirst("timecode", None)
 
 	game = None
 
@@ -63,12 +69,11 @@ def performAction():
 			sendError("No game found with that ID: {}".format(game_id))
 			return False
 		game = GameDB[game_id]
-		
 
-	valid_actions = ["playCard", "newGame", "playStar", "getState", "joinGame", "getHand"]
+	valid_actions = ["playcard", "newgame", "playstar", "getstate", "joingame", "gethand"]
 
 	# START A NEW GAME
-	if action == "newGame":
+	if action == "newgame":
 		if not (2 <= players <= 4):
 			sendError("Invalid value for players. Valid values are 2-4")
 			return False
@@ -80,7 +85,7 @@ def performAction():
 		newGame(players, name)
 
 	# JOIN A GAME	
-	elif action == "joinGame":
+	elif action == "joingame":
 		if game:
 			joinGame(game)
 		else:
@@ -88,12 +93,12 @@ def performAction():
 			return False
 
 	# GET A HAND
-	elif action == "getHand":
+	elif action == "gethand":
 		if game:
 			getHand(game,player_idx)
 
 	# PLAY A CARD	
-	elif action == "playCard":
+	elif action == "playcard":
 		if game:
 			if not playCard(game, player_idx):
 				sendError("Card cannot be played: either the payer has no cards, or player_idx out of bounds")
@@ -101,11 +106,11 @@ def performAction():
 			else:
 				saveGDB()
 		else:
-			sendError("playCard requires a game id and player index")
+			sendError("playcard requires a game id and player index")
 			return False
 
 	# PLAY A STAR CARD
-	elif action == "playStar":
+	elif action == "playstar":
 		if game:
 			playStar(game)
 		else:
@@ -113,7 +118,7 @@ def performAction():
 			return False
 
 	# GET THE GAME STATE
-	elif action == "getState":
+	elif action == "getstate":
 		if game:
 			getState(game)
 

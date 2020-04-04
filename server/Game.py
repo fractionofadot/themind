@@ -20,7 +20,7 @@ class Game(object):
 			raise ValueError("Number of players must be between 2 and 4.\nExample: g = Game(4)")
 
 		self.id = "".join( random.sample(string.ascii_uppercase, 4) )
-		self.players = number_of_players
+		self.player_count = number_of_players
 		self.deck = list( range(1,101) )
 		self.lives = number_of_players
 		self.stars = 1
@@ -32,6 +32,7 @@ class Game(object):
 		self.pile = []
 		self.discard = []
 		self.result = 0
+		self.state_id = time()
 
 		self.dealHands()
 
@@ -115,9 +116,9 @@ class Game(object):
 				self.blind = True
 				self.level = 1
 
-		# In Blind Mode, so level limit is 100 / self.players
+		# In Blind Mode, so level limit is 100 / self.player_count
 		else: 
-			if next_level < (100 / self.players):
+			if next_level < (100 / self.player_count):
 				self.level = next_level
 			else:
 				self.gameOver(1)
@@ -126,10 +127,14 @@ class Game(object):
 		self.dealHands()
 		return self.level
 
+	def jsonHeader(self):
+		print("Content-type: application/json")
+		print("")
+
 	def printStateJSON(self):
 		cs = {
 			"id": self.id,
-			"players": self.players,
+			"players": self.player_count,
 			"lives": self.lives,
 			"stars": self.stars,
 			"levels": self.levels,
@@ -138,9 +143,10 @@ class Game(object):
 			"discard" : self.discard,
 			"pile" : self.pile,
 			"result" : self.result,
-			"timestamp" : time()
+			"state_id" : self.state_id
 		}
 
+		self.jsonHeader()
 		print(json.dumps(cs))
 
 
@@ -162,7 +168,7 @@ class Game(object):
 	def dealHands(self):
 		random.shuffle(self.deck)
 		self.position = 0
-		for i in range(self.players):
+		for i in range(self.player_count):
 			cards = self.nextHand()
 			if cards:
 				self.hands[i] = sorted(cards)
@@ -173,7 +179,7 @@ class Game(object):
 		return True
 
 	def playCard(self, idx):
-		if not (0 <= idx <= self.players - 1):
+		if not (0 <= idx <= self.player_count - 1):
 			return False
 		if len(self.hands[idx]) > 0:	
 			card = min(self.hands[idx])
@@ -229,14 +235,7 @@ class Game(object):
 		for hand in self.hands:
 			if len(hand) == 0:
 				count = count + 1
-		if count == self.players:
+		if count == self.player_count:
 			return True
 		return False
 
-# from Game import Game
-# g = Game(4)
-# g.state()
-# g.playCard(0)
-# g.state()
-# g.playCard(0)
-# g.state()
