@@ -183,7 +183,7 @@ class GameServer():
 	def getPidCookie(self):
 		if 'HTTP_COOKIE' in os.environ:
 			cookie = cgi.escape( os.environ['HTTP_COOKIE'] )
-			pid = split(cookie, '=')[1]
+			pid = cookie.split('=')[1]
 			return pid
 		else:
 			return None
