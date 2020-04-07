@@ -58,6 +58,7 @@ class GameServer():
 		print( json.dumps({"error" : msg}) )
 
 	def sendPlayerInfo(self, game):
+		self.setPidCookie()
 		self.jsonHeader()
 		print({'player_id': self.request['player_id'], 'game_id': game.id})
 
@@ -164,3 +165,14 @@ class GameServer():
 			print("Good")
 		else:
 			self.sendError("Does not meet requirements")
+
+	def getPidCookie(self):
+		if 'HTTP_COOKIE' in os.environ:
+			cookie = cgi.escape( os.environ['HTTP_COOKIE'] )
+			pid = split(cookie, '=')[1]
+			return pid
+		else:
+			return setPlayerId()
+
+	def setPidCookie(self, pid):
+		print( "Set-Cookie: pid={}".format(pid) )
