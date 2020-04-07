@@ -57,11 +57,15 @@ class GameServer():
 		self.jsonHeader()
 		print( json.dumps({"error" : msg}) )
 
+	def sendPlayerInfo(self, game):
+		self.jsonHeader()
+		print({'player_id': self.request['player_id'], 'game_id': game.id})
+
 	def requires(self, requirements):
 		for r in requirements:
 			if not self.request[r]:
 				return False
-			return True
+		return True
 
 	def createNewPlayer(self, name, game_id):
 		total_players = self.GameDB[game_id].player_count
@@ -72,6 +76,8 @@ class GameServer():
 		 		'game_id' : game_id
 			}
 			self.savePlayerDB()
+
+			self.request['player_id'] = player_id
 
 			return True
 		return False
@@ -126,10 +132,8 @@ class GameServer():
 			game = Game(self.request['players'])
 			self.GameDB[game.id] = game
 			self.saveGameDB()
-
 			self.createNewPlayer(self.request['name'], game.id)
-
-			game.printStateJSON()
+			self.sendPlayerInfo(game)
 		else:
 			self.sendError("new requires name and players")
 
@@ -141,7 +145,7 @@ class GameServer():
 			if game_id in self.GameDB:
 				if self.createNewPlayer(name, game_id):
 					game = self.GameDB[game_id]
-					game.printStateJSON()
+					self.sendPlayerInfo(game)
 				else:
 					self.sendError( "Game {} is full.".format(game_id) )
 			else:
