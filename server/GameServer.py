@@ -175,11 +175,12 @@ class GameServer():
 
 			game = self.GameDB[game_id]
 			player = self.PlayerDB[player_id]
+			index = player['index']
 
-			if game.playCard():
+			if game.playCard(index):
 				game_obj = game.getGameObject()
 				game_obj['player_id'] = player_id
-				game_obj['hand'] = game.getHand(player['index'])
+				game_obj['hand'] = game.getHand(index)
 
 				self.jsonHeader()
 				print(json.dumps(game_obj))
