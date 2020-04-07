@@ -58,7 +58,7 @@ class GameServer():
 		print( json.dumps({"error" : msg}) )
 
 	def sendPlayerInfo(self, game):
-		self.setPidCookie()
+		self.setPidCookie(self.request['player_id'])
 		self.jsonHeader()
 		print({'player_id': self.request['player_id'], 'game_id': game.id})
 
@@ -102,11 +102,14 @@ class GameServer():
 		form = cgi.FieldStorage()
 		action = form.getfirst("action", "").lower()
 
+		# if there is a player_id cookie, use it. 
+		cookie = self.getPidCookie()
+
 		self.request = {
 			'game_id' 	: form.getfirst("game_id", "").upper(),
 			'players' 	: int(form.getfirst("players", 0)),
 			'name' 		: form.getfirst("name", ""),
-			'player_id' : form.getfirst("player_id", None),
+			'player_id' : form.getfirst("player_id", cookie if cookie else None),
 			'state_id' 	: form.getfirst("state_id", None)
 		}
 
@@ -172,7 +175,7 @@ class GameServer():
 			pid = split(cookie, '=')[1]
 			return pid
 		else:
-			return setPlayerId()
+			return None
 
 	def setPidCookie(self, pid):
 		print( "Set-Cookie: pid={}".format(pid) )
