@@ -64,7 +64,7 @@ class Game(object):
 		if (self.stars >= 1):
 			self.stars = self.stars - 1
 			self._discardLowestInEachHand()
-			return self.stars
+			return True
 		else:
 			return False
 

@@ -188,13 +188,27 @@ class GameServer():
 				self.sendError("Could not play card.")
 
 		else:
-			self.sendError("Does not meet requirements")
+			self.sendError("playcard requires game_id and player_id")
 
 	def playStar(self):
 		if self.requires( ['player_id', 'game_id'] ):
-			print("Good")
+			game_id = self.request['game_id']
+			player_id = self.request['player_id']
+
+			game = self.GameDB[game_id]
+
+			if game.playStar():
+				game_obj = game.getGameObject()
+				game_obj['player_id'] = player_id
+				game_obj['hand'] = game.getHand(index)
+
+				self.jsonHeader()
+				print(json.dumps(game_obj))
+			else:
+				self.sendError("Could not play a star.")
+
 		else:
-			self.sendError("Does not meet requirements")
+			self.sendError("playstar requires game_id and player_id")
 
 	def getPidCookie(self):
 		if 'HTTP_COOKIE' in os.environ:
