@@ -149,6 +149,23 @@ class Game(object):
 		self.jsonHeader()
 		print(json.dumps(cs))
 
+	def getGameObject(self):
+		game_state = {
+			"game_id": self.id,
+			"players": self.player_count,
+			"lives": self.lives,
+			"stars": self.stars,
+			"levels": self.levels,
+			"level": self.level,
+			"blind": self.blind,
+			"discard" : self.discard,
+			"pile" : self.pile,
+			"result" : self.result,
+			"state_id" : self.state_id
+		}
+
+		return game_state
+
 
 	def nextHand(self):
 		"""

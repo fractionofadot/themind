@@ -74,7 +74,8 @@ class GameServer():
 			player_id = "".join( random.sample(string.ascii_uppercase, 10) )
 			self.PlayerDB[player_id] = { 
 		 		'name' : name,
-		 		'game_id' : game_id
+		 		'game_id' : game_id,
+		 		'index' : len(self.playersInGame(game_id))
 			}
 			self.savePlayerDB()
 
@@ -122,9 +123,19 @@ class GameServer():
 		# request=state&game_id=ABCD&player_id=AdgDIsdfSDP
 		if self.requires( ['game_id', 'player_id'] ):
 			game_id = self.request['game_id']
+			player_id = self.request['player_id']
+
 			if game_id in self.GameDB:
 				game = self.GameDB[game_id]
-				game.printStateJSON()
+				player = self.PlayerDB[player_id]
+				hand = game.getHand(player['index'])
+
+				game_obj = game.getGameObject()
+				game_obj['player_id'] = player_id
+				game_obj['hand'] = hand
+
+				self.jsonHeader()
+				print(json.dumps(game_obj))
 			else:
 				self.sendError("Game not found")
 		else:
