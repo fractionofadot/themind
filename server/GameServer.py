@@ -57,11 +57,16 @@ class GameServer():
 		self.jsonHeader()
 		print( json.dumps({"error" : msg}) )
 
+	def sendPlayerInfo(self, game):
+		self.setPidCookie(self.request['player_id'])
+		self.jsonHeader()
+		print({'player_id': self.request['player_id'], 'game_id': game.id})
+
 	def requires(self, requirements):
 		for r in requirements:
 			if not self.request[r]:
 				return False
-			return True
+		return True
 
 	def createNewPlayer(self, name, game_id):
 		total_players = self.GameDB[game_id].player_count
@@ -69,9 +74,12 @@ class GameServer():
 			player_id = "".join( random.sample(string.ascii_uppercase, 10) )
 			self.PlayerDB[player_id] = { 
 		 		'name' : name,
-		 		'game_id' : game_id
+		 		'game_id' : game_id,
+		 		'index' : len(self.playersInGame(game_id))
 			}
 			self.savePlayerDB()
+
+			self.request['player_id'] = player_id
 
 			return True
 		return False
@@ -95,11 +103,14 @@ class GameServer():
 		form = cgi.FieldStorage()
 		action = form.getfirst("action", "").lower()
 
+		# if there is a player_id cookie, use it. 
+		cookie = self.getPidCookie()
+
 		self.request = {
 			'game_id' 	: form.getfirst("game_id", "").upper(),
 			'players' 	: int(form.getfirst("players", 0)),
 			'name' 		: form.getfirst("name", ""),
-			'player_id' : form.getfirst("player_id", None),
+			'player_id' : form.getfirst("player_id", cookie if cookie else None),
 			'state_id' 	: form.getfirst("state_id", None)
 		}
 
@@ -112,9 +123,19 @@ class GameServer():
 		# request=state&game_id=ABCD&player_id=AdgDIsdfSDP
 		if self.requires( ['game_id', 'player_id'] ):
 			game_id = self.request['game_id']
+			player_id = self.request['player_id']
+
 			if game_id in self.GameDB:
 				game = self.GameDB[game_id]
-				game.printStateJSON()
+				player = self.PlayerDB[player_id]
+				hand = game.getHand(player['index'])
+
+				game_obj = game.getGameObject()
+				game_obj['player_id'] = player_id
+				game_obj['hand'] = hand
+
+				self.jsonHeader()
+				print(json.dumps(game_obj))
 			else:
 				self.sendError("Game not found")
 		else:
@@ -126,10 +147,8 @@ class GameServer():
 			game = Game(self.request['players'])
 			self.GameDB[game.id] = game
 			self.saveGameDB()
-
 			self.createNewPlayer(self.request['name'], game.id)
-
-			game.printStateJSON()
+			self.sendPlayerInfo(game)
 		else:
 			self.sendError("new requires name and players")
 
@@ -141,7 +160,7 @@ class GameServer():
 			if game_id in self.GameDB:
 				if self.createNewPlayer(name, game_id):
 					game = self.GameDB[game_id]
-					game.printStateJSON()
+					self.sendPlayerInfo(game)
 				else:
 					self.sendError( "Game {} is full.".format(game_id) )
 			else:
@@ -160,3 +179,14 @@ class GameServer():
 			print("Good")
 		else:
 			self.sendError("Does not meet requirements")
+
+	def getPidCookie(self):
+		if 'HTTP_COOKIE' in os.environ:
+			cookie = cgi.escape( os.environ['HTTP_COOKIE'] )
+			pid = split(cookie, '=')[1]
+			return pid
+		else:
+			return None
+
+	def setPidCookie(self, pid):
+		print( "Set-Cookie: pid={}".format(pid) )
