@@ -169,13 +169,28 @@ class GameServer():
 			self.sendError("join requires name and game_id")
 
 	def playCard(self):
-		if self.requires( ['name', 'players'] ):
-			print("Good")
+		if self.requires( ['player_id', 'game_id'] ):
+			game_id = self.request['game_id']
+			player_id = self.request['player_id']
+
+			game = self.GameDB[game_id]
+			player = self.PlayerDB[player_id]
+
+			if game.playCard():
+				game_obj = game.getGameObject()
+				game_obj['player_id'] = player_id
+				game_obj['hand'] = game.getHand(player['index'])
+
+				self.jsonHeader()
+				print(json.dumps(game_obj))
+			else:
+				self.sendError("Could not play card.")
+
 		else:
 			self.sendError("Does not meet requirements")
 
 	def playStar(self):
-		if self.requires( ['name', 'players'] ):
+		if self.requires( ['player_id', 'game_id'] ):
 			print("Good")
 		else:
 			self.sendError("Does not meet requirements")
