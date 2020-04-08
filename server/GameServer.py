@@ -174,7 +174,7 @@ class GameServer():
 				else:
 					self.sendError( "Game {} is full.".format(game_id) )
 			else:
-				sendError("Game {} does not exist".format(game_id) )
+				self.sendError("Game {} does not exist".format(game_id) )
 		else:
 			self.sendError("join requires name and game_id")
 

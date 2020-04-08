@@ -88,7 +88,7 @@
 		let gameId = document.getElementById('game_id')
 		let nameId = document.getElementById('name_id')
 		startButton.addEventListener('click', (e) => {
-			fetch(server + "?action=new")
+			fetch(server + "?action=new&name=" + nameId.value)
 		  	.then((response) => {
 		    		return response.json();
 		  	})
@@ -107,7 +107,6 @@
 		  	.then((data) => {
 		    		console.log(data);
 		  	}).catch((error) => {
-				console.log(req);
 		  		console.log(error);
 		  	});
 		});
