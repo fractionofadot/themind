@@ -128,6 +128,10 @@ class GameServer():
 			game_id = self.request['game_id']
 			player_id = self.request['player_id']
 
+			if player_id not in playersInGame(game_id):
+				sendError("Player {} not found in game {} ".format(player_id, game_id))
+				return False
+
 			if game_id in self.GameDB:
 				game = self.GameDB[game_id]
 				player = self.PlayerDB[player_id]
@@ -147,6 +151,9 @@ class GameServer():
 	def newGame(self):
 		# request=new&name=Bunburry&players=2
 		if self.requires( ['name', 'players'] ):
+			if not 2 <= self.request['players'] <= 4:
+				self.sendError("Number of players must be from 2-4")
+				return False
 			game = Game(self.request['players'])
 			self.GameDB[game.id] = game
 			self.saveGameDB()
@@ -175,6 +182,9 @@ class GameServer():
 		if self.requires( ['player_id', 'game_id'] ):
 			game_id = self.request['game_id']
 			player_id = self.request['player_id']
+			if player_id not in playersInGame(game_id):
+				sendError("Player {} not found in game {} ".format(player_id, game_id))
+				return False
 
 			game = self.GameDB[game_id]
 			player = self.PlayerDB[player_id]
@@ -198,6 +208,9 @@ class GameServer():
 		if self.requires( ['player_id', 'game_id'] ):
 			game_id = self.request['game_id']
 			player_id = self.request['player_id']
+			if player_id not in playersInGame(game_id):
+				sendError("Player {} not found in game {} ".format(player_id, game_id))
+				return False
 
 			game = self.GameDB[game_id]
 			player = self.PlayerDB[player_id]
