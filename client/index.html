@@ -36,6 +36,30 @@
 		<div id="tm-login-page">
 			<h3 class="mdc-typography--headline3">Ordinal</h3>
 
+			<div id="players" class="mdc-select">
+			  <div class="mdc-select__anchor demo-width-class">
+			    <i class="mdc-select__dropdown-icon"></i>
+			    <div class="mdc-select__selected-text"></div>
+			    <span class="mdc-floating-label">Number of Players</span>
+			    <div class="mdc-line-ripple"></div>
+			  </div>
+
+			  <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
+			    <ul class="mdc-list">
+			      <li class="mdc-list-item mdc-list-item--selected" data-value="" aria-selected="true"></li>
+			      <li class="mdc-list-item" data-value="2">
+			        2
+			      </li>
+			      <li class="mdc-list-item" data-value="3">
+			        3
+			      </li>
+			      <li class="mdc-list-item" data-value="4">
+			        4
+			      </li>
+			    </ul>
+			  </div>
+			</div>
+
 			<label class="mdc-text-field mdc-text-field--outlined">
 			  <input id="game_id" type="text" class="mdc-text-field__input" aria-labelledby="game-label-id">
 			  <div class="mdc-notched-outline">
@@ -79,6 +103,12 @@
 		const buttonRipples = [].map.call(document.querySelectorAll('.mdc-button'), function(el) {
 		  return new mdc.ripple.MDCRipple(el);
 		});
+
+		const select = new mdc.select.MDCSelect(document.querySelector('.mdc-select'));
+
+		select.listen('MDCSelect:change', () => {
+		  // alert(`Selected option at index ${select.selectedIndex} with value "${select.value}"`);
+		});
 	</script>
 
 	<script type="text/javascript">
@@ -87,8 +117,24 @@
 		let joinButton = document.getElementById('joinButton') 
 		let gameId = document.getElementById('game_id')
 		let nameId = document.getElementById('name_id')
+
+		var post_req = {
+		    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+		    mode: 'cors', // no-cors, *cors, same-origin
+		    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+		    credentials: 'same-origin', // include, *same-origin, omit
+		    headers: {
+		      'Content-Type': 'application/json'
+		      // 'Content-Type': 'application/x-www-form-urlencoded',
+		    },
+		    redirect: 'follow', // manual, *follow, error
+		    referrerPolicy: 'no-referrer', // no-referrer, *client
+		    body: {} // body data type must match "Content-Type" header
+		  }
+
 		startButton.addEventListener('click', (e) => {
-			fetch(server + "?action=new&name=" + nameId.value)
+			post_req.body = {"action" : "new", "name" : nameId.value, "players" : select.value}
+			fetch(server, post_req) //+ "?action=new&name=" + nameId.value + "&players=" + select.value
 		  	.then((response) => {
 		    		return response.json();
 		  	})
@@ -98,6 +144,7 @@
 		  		console.log(error);
 		  	});
 		});
+
 		joinButton.addEventListener('click', (e) => {
 			req = server + "?action=join&name=" + nameId.value + "&game_id=" + gameId.value;
 			fetch(req)
@@ -110,5 +157,8 @@
 		  		console.log(error);
 		  	});
 		});
+	</script>
+	<script type="text/javascript">
+		
 	</script>
 </html>
