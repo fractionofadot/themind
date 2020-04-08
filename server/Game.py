@@ -62,7 +62,7 @@ class Game(object):
 		Next, all the players refocus and the game continues. 
 		"""
 		if (self.stars >= 1):
-			self.stars = self.stars - 1
+			self.stars = (self.stars - 1)
 			self._discardLowestInEachHand()
 			return True
 		else:
@@ -241,11 +241,13 @@ class Game(object):
 
 	def _discardLowestInEachHand(self):
 		for i in range(len(self.hands)):
-			if len(self.hands[i] == 0): 
+			if len(self.hands[i]) == 0: 
 				continue
 			hand_min = min(self.hands[i])
 			hand_min_idx = self.hands[i].index(hand_min)
 			self.discard.append( self.hands[i].pop(hand_min_idx) )
+			if self._allHandsEmpty():
+				self.nextLevel()
 
 	def _allHandsEmpty(self):
 		count = 0

@@ -118,6 +118,9 @@ class GameServer():
 			valid_requests[action]()
 		else:
 			self.sendError("Invalid action")
+
+		self.saveGameDB()
+		self.savePlayerDB()
 		
 	def getState(self):
 		# request=state&game_id=ABCD&player_id=AdgDIsdfSDP
@@ -181,6 +184,7 @@ class GameServer():
 				game_obj = game.getGameObject()
 				game_obj['player_id'] = player_id
 				game_obj['hand'] = game.getHand(index)
+				self.saveGameDB()
 
 				self.jsonHeader()
 				print(json.dumps(game_obj))
@@ -196,16 +200,19 @@ class GameServer():
 			player_id = self.request['player_id']
 
 			game = self.GameDB[game_id]
+			player = self.PlayerDB[player_id]
+			index = player['index']
 
 			if game.playStar():
 				game_obj = game.getGameObject()
 				game_obj['player_id'] = player_id
 				game_obj['hand'] = game.getHand(index)
+				self.saveGameDB()
 
 				self.jsonHeader()
 				print(json.dumps(game_obj))
 			else:
-				self.sendError("Could not play a star.")
+				self.sendError("Could not play star.")
 
 		else:
 			self.sendError("playstar requires game_id and player_id")
