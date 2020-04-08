@@ -60,7 +60,7 @@ class GameServer():
 	def sendPlayerInfo(self, game):
 		self.setPidCookie(self.request['player_id'])
 		self.jsonHeader()
-		print({"player_id": self.request['player_id'], "game_id": game.id})
+		print(json.dumps({"player_id": self.request['player_id'], "game_id": game.id}))
 
 	def requires(self, requirements):
 		for r in requirements:
