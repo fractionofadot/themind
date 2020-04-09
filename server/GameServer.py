@@ -189,7 +189,8 @@ class GameServer():
 
 			game = self.GameDB[game_id]
 
-			if game.state_id != self.request['state_id']:
+			if not (str(game.state_id) == self.request['state_id']):
+				self.sendError("state_id is out of date, new state_id is {}".format(game.state_id))
 				return False
 
 			player = self.PlayerDB[player_id]
@@ -207,7 +208,7 @@ class GameServer():
 				self.sendError("Could not play card.")
 
 		else:
-			self.sendError("playcard requires game_id and player_id")
+			self.sendError("playcard requires game_id, player_id, state_id")
 
 	def playStar(self):
 		if self.requires( ['player_id', 'game_id', 'state_id'] ):
@@ -220,6 +221,7 @@ class GameServer():
 			game = self.GameDB[game_id]
 
 			if game.state_id != self.request['state_id']:
+				self.sendError("state_id is out of date, new state_id is {}".format(game.state_id))
 				return False
 
 			player = self.PlayerDB[player_id]
@@ -237,7 +239,7 @@ class GameServer():
 				self.sendError("Could not play star.")
 
 		else:
-			self.sendError("playstar requires game_id and player_id")
+			self.sendError("playstar requires game_id, player_id, state_id")
 
 	def getCookie(self):
 		if 'HTTP_COOKIE' in os.environ:
