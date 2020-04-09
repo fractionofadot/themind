@@ -6,7 +6,7 @@ The first two possible actions a user could take are:
 * create a new game
 * join an existing game
 
-When you create a new game, you also create a new player. The API responds with the `game_id` and the `player_id`, and sets a cookie for the `player_id`. There is no other way to retrieve these ids later on, so be sure to save this information.
+When you create a new game, you also create a new player. The API responds with the `game_id` and the `player_id`, and sets a cookie for the `game_id` and `player_id`. There is no other way to retrieve these ids later on, so be sure to save this information.
 
 ```{'player_id': 'DGQIWAHOLE', 'game_id': 'RPZL'}```
 
