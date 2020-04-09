@@ -7,7 +7,9 @@ Users will be able to visit the site from any browser and join or start a game w
 Based on the Mind rules: https://www.dropbox.com/s/dvdy4lbqa44aba7/The%20Mind%20Rules.pdf?dl=0
 
 # Server
-The server code is written in Python. There is a `Game` class which stores the game state.
+The server code is written in Python. There is a `Game` class which stores the game state and a `GameServer` class which handles the client server communication. 
+
+[Server API docs](https://github.com/fractionofadot/ordinal/blob/master/server/api.md)
 
 # Client
 The client is written in html and javascript, posting and getting game state from the server.
