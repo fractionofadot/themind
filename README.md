@@ -1,10 +1,10 @@
-# The Mind - Web
-A web implementation of "The Mind" game.
+# Ordinal - Web
+A web implementation of a card game. Similar to "The Mind" game.
 
 Users will be able to visit the site from any browser and join or start a game with their friends from around the world.
 
 # Rules
-https://www.dropbox.com/s/dvdy4lbqa44aba7/The%20Mind%20Rules.pdf?dl=0
+Based on the Mind rules: https://www.dropbox.com/s/dvdy4lbqa44aba7/The%20Mind%20Rules.pdf?dl=0
 
 # Server
 The server code is written in Python. There is a `Game` class which stores the game state.
