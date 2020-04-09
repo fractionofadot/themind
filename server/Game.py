@@ -62,6 +62,7 @@ class Game(object):
 		Next, all the players refocus and the game continues. 
 		"""
 		if (self.stars >= 1):
+			self.state_id = time()
 			self.stars = (self.stars - 1)
 			self._discardLowestInEachHand()
 			return True
@@ -72,6 +73,7 @@ class Game(object):
 		pass	 
 
 	def loseLife(self):
+		self.state_id = time()
 		if self.lives > 1:
 			self.lives = self.lives - 1
 		else:
@@ -96,6 +98,7 @@ class Game(object):
 		How many levels can the team complete blind?
 
 		"""
+		self.state_id = time()
 
 		if self.result == 2: 
 			return False
@@ -198,6 +201,8 @@ class Game(object):
 	def playCard(self, idx):
 		if not (0 <= idx <= self.player_count - 1):
 			return False
+
+		self.state_id = time()
 		if len(self.hands[idx]) > 0:	
 			card = min(self.hands[idx])
 
