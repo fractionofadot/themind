@@ -73,3 +73,51 @@ this id is returned from the server when starting a new game or creating a new p
 
 `game_id` 
 this id is returned from the server when a new game is created.
+
+#### Server response json
+```
+{"stars": 1, "result": 0, "discard": [], "lives": 2, "players": 2, "blind": false, "levels": 12, "pile": [], "player_id": "DGQIWAHOLE", "level": 1, "state_id": 1586364460.762625, "hand": [90], "game_id": "RPZL"}
+```
+
+`state_id`
+(str) Include this in `playcard` and `playstar` requests to avoid a race condition situation between two players attempting to play at the same time.
+
+`game_id`
+(str) The game id. Required with all requests.
+
+`player_id`
+The id of the player who requested this state update. State includes the player's hand.
+
+`hand`
+(array) Shows the hand of `player_id`
+
+`pile`
+(array) A list containing the cards that have been played successfully. Equivilent to the stack that would be on the table. 
+
+`discard`
+(array) A list containing discarded cards. Cards are discarded when played out of order.
+
+`result`
+(int)
+`0` : the game is still in progress
+`1` : the game has been won
+`2` : the game has been lost
+
+`stars`
+(int) Number of throwing stars remaining in the game
+
+`lives`
+(int) The number of lives the team has remaining. 
+
+`players`
+(int) The total number of players in the game
+
+`levels`
+(int) The total number of levels in the game
+
+`level`
+(int) The current level that the team is on.
+
+`blind`
+(bool) Indicates if the team is playing in blind mode
+
