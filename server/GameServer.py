@@ -179,14 +179,19 @@ class GameServer():
 			self.sendError("join requires name and game_id")
 
 	def playCard(self):
-		if self.requires( ['player_id', 'game_id'] ):
+		if self.requires( ['player_id', 'game_id', 'state_id'] ):
 			game_id = self.request['game_id']
 			player_id = self.request['player_id']
+
 			if player_id not in self.playersInGame(game_id):
 				self.sendError("Player {} not found in game {}".format(player_id, game_id))
 				return False
 
 			game = self.GameDB[game_id]
+
+			if game.state_id != self.request['state_id']:
+				return False
+
 			player = self.PlayerDB[player_id]
 			index = player['index']
 
@@ -205,7 +210,7 @@ class GameServer():
 			self.sendError("playcard requires game_id and player_id")
 
 	def playStar(self):
-		if self.requires( ['player_id', 'game_id'] ):
+		if self.requires( ['player_id', 'game_id', 'state_id'] ):
 			game_id = self.request['game_id']
 			player_id = self.request['player_id']
 			if player_id not in self.playersInGame(game_id):
@@ -213,6 +218,10 @@ class GameServer():
 				return False
 
 			game = self.GameDB[game_id]
+
+			if game.state_id != self.request['state_id']:
+				return False
+
 			player = self.PlayerDB[player_id]
 			index = player['index']
 
