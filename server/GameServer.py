@@ -58,7 +58,7 @@ class GameServer():
 		print( json.dumps({"error" : msg}) )
 
 	def sendPlayerInfo(self, game):
-		self.setPidCookie(self.request['player_id'])
+		self.setCookie(self.request['player_id'], game.id)
 		self.jsonHeader()
 		print(json.dumps({"player_id": self.request['player_id'], "game_id": game.id}))
 
@@ -104,13 +104,13 @@ class GameServer():
 		action = form.getfirst("action", "").lower()
 
 		# if there is a player_id cookie, use it. 
-		cookie = self.getPidCookie()
+		cookie = self.getCookie()
 
 		self.request = {
-			'game_id' 	: form.getfirst("game_id", "").upper(),
+			'game_id' 	: form.getfirst("game_id", cookie['gid'] if cookie else "").upper(),
 			'players' 	: int(form.getfirst("players", 0)),
 			'name' 		: form.getfirst("name", ""),
-			'player_id' : form.getfirst("player_id", cookie if cookie else None),
+			'player_id' : form.getfirst("player_id", cookie['pid'] if cookie else None),
 			'state_id' 	: form.getfirst("state_id", None)
 		}
 
@@ -230,13 +230,20 @@ class GameServer():
 		else:
 			self.sendError("playstar requires game_id and player_id")
 
-	def getPidCookie(self):
+	def getCookie(self):
 		if 'HTTP_COOKIE' in os.environ:
 			cookie = cgi.escape( os.environ['HTTP_COOKIE'] )
-			pid = cookie.split('=')[1]
-			return pid
+			pairs = cookie.split('&')
+			ids = {
+				"gid" : "", 
+				"pid" : ""
+			}
+			for p in pairs:
+				key, value = p.split('=')
+				ids[key] = value
+			return ids
 		else:
 			return None
 
-	def setPidCookie(self, pid):
-		print( "Set-Cookie: pid={}".format(pid) )
+	def setCookie(self, pid, gid):
+		print( "Set-Cookie: pid={}&gid={}".format(pid, gid) )
