@@ -204,7 +204,9 @@
 		    		return response.json();
 		  	})
 		  	.then((data) => {
-		    		console.log(data);
+	    		for (const key in data) {
+	    		  gamePage.innerHTML += `<P>${key}: ${object[key]}</P>`;
+	    		}
 		  	}).catch((error) => {
 		  		console.log(error);
 		  	});
