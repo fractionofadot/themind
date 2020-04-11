@@ -14,7 +14,7 @@
     		  --mdc-theme-on-secondary: #E1F5FE;
     		}
 
-    		#tm-login-page {
+    		#ord-login-page {
     			width: 100%;
     			max-width: 400px;
     			display: block;
@@ -42,10 +42,19 @@
     		.ord-players-label {
     			margin-bottom: 8px;
     		}
+
+    		#ord-game-page {
+    			display: none;
+    		}
+
+    		.ord-hide {
+    			display: none;
+    		}
+
     	</style>
 	</head>
 	<body>
-		<div id="tm-login-page">
+		<div id="ord-login-page">
 			<h3 class="mdc-typography--headline3">Ordinal</h3>
 
 			<label class="mdc-text-field mdc-text-field--outlined">
@@ -117,6 +126,10 @@
 			  <span class="mdc-button__label">Start a New Game</span>
 			</button>
 		</div>
+
+		<div id="ord-game-page">
+			
+		</div>
 	</body>
 
 	<script type="text/javascript">
@@ -140,7 +153,6 @@
 		for (var i = radios.length - 1; i >= 0; i--) {
 			formFields[i].input = radios[i]
 		}
-		
 
 	</script>
 
@@ -151,6 +163,8 @@
 		let gameId = document.getElementById('game_id')
 		let nameId = document.getElementById('name_id')
 
+		let serverData = {}
+
 		startButton.addEventListener('click', (e) => {
 			players = document.querySelector('input[name = "players"]:checked').value;
 
@@ -160,9 +174,12 @@
 		  	})
 		  	.then((data) => {
 		    		console.log(data);
+		    		serverData = data;
 		  	}).catch((error) => {
 		  		console.log(error);
 		  	});
+
+		  	displayGameInfo();
 		});
 
 		joinButton.addEventListener('click', (e) => {
@@ -173,9 +190,30 @@
 		  	})
 		  	.then((data) => {
 		    		console.log(data);
+		    		serverData = data;
 		  	}).catch((error) => {
 		  		console.log(error);
 		  	});
+		  	displayGameInfo();
 		});
+
+		function displayGameInfo() {
+			let gamePage = document.getElementById("ord-game-page");
+			let loginPage = document.getElementById("ord-login-page")
+			gamePage.style.display = 'block';
+			loginPage.style.display = 'none'
+
+			req = server + "?action=getstate&player_id=" + serverData.player_id + "&game_id=" + serverData.game_id;
+			fetch(req)
+		  	.then((response) => {
+		    		return response.json();
+		  	})
+		  	.then((data) => {
+		    		console.log(data);
+		    		serverData = data;
+		  	}).catch((error) => {
+		  		console.log(error);
+		  	});
+		}
 	</script>
 </html>
