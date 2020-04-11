@@ -163,8 +163,6 @@
 		let gameId = document.getElementById('game_id')
 		let nameId = document.getElementById('name_id')
 
-		let serverData = {}
-
 		startButton.addEventListener('click', (e) => {
 			players = document.querySelector('input[name = "players"]:checked').value;
 
@@ -173,13 +171,12 @@
 		    		return response.json();
 		  	})
 		  	.then((data) => {
-		    		console.log(data);
-		    		serverData = data;
+                                displayGameInfo(data);
 		  	}).catch((error) => {
 		  		console.log(error);
 		  	});
 
-		  	displayGameInfo();
+		  	
 		});
 
 		joinButton.addEventListener('click', (e) => {
@@ -189,20 +186,18 @@
 		    		return response.json();
 		  	})
 		  	.then((data) => {
-		    		console.log(data);
-		    		serverData = data;
+				displayGameInfo(data);
 		  	}).catch((error) => {
 		  		console.log(error);
 		  	});
-		  	displayGameInfo();
 		});
 
-		function displayGameInfo() {
+		function displayGameInfo(serverData) {
 			let gamePage = document.getElementById("ord-game-page");
 			let loginPage = document.getElementById("ord-login-page")
 			gamePage.style.display = 'block';
 			loginPage.style.display = 'none'
-
+			console.log(serverData);
 			req = server + "?action=getstate&player_id=" + serverData.player_id + "&game_id=" + serverData.game_id;
 			fetch(req)
 		  	.then((response) => {
@@ -210,7 +205,6 @@
 		  	})
 		  	.then((data) => {
 		    		console.log(data);
-		    		serverData = data;
 		  	}).catch((error) => {
 		  		console.log(error);
 		  	});
