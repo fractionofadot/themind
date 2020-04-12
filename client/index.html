@@ -205,7 +205,7 @@
 		  	})
 		  	.then((data) => {
 	    		for (const key in data) {
-	    		  gamePage.innerHTML += `<P>${key}: ${object[key]}</P>`;
+	    		  gamePage.innerHTML += `<P>${key}: ${data[key]}</P>`;
 	    		}
 		  	}).catch((error) => {
 		  		console.log(error);
