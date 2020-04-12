@@ -199,9 +199,11 @@
 		});
 
 		playCardButton.addEventListener('click', playCard );
+
 		function playCard() {
-			console.log("play card");
-				req = server + "?action=playcard&player_id=" + playCardButton.getAttribute("data-pid") + "&game_id=" + playCardButton.getAttribute("data-gid") + "state_id=" + playCardButton.getAttribute("data-sid");
+			console.log("play card", gameObj);
+
+				req = server + "?action=playcard&player_id=" + gameObj.player_id + "&game_id=" + gameObj.game_id + "state_id=" + gameObj.state_id;
 				fetch(req)
 			  	.then((response) => {
 			    		return response.json();
