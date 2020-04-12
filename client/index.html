@@ -128,6 +128,10 @@
 		</div>
 
 		<div id="ord-game-page">
+			<button id="playCardButton" ordPlayerId="" class="mdc-button mdc-button--outlined">
+			  <div class="mdc-button__ripple"></div>
+			  <span class="mdc-button__label">Play Card</span>
+			</button>
 			
 		</div>
 	</body>
@@ -158,12 +162,13 @@
 
 	<script type="text/javascript">
 		const server = 'https://i1.fractionofadot.org/ordinal/server/index.py';
-		let startButton = document.getElementById('startButton')
-		let joinButton = document.getElementById('joinButton') 
-		let gameId = document.getElementById('game_id')
-		let nameId = document.getElementById('name_id')
+		let startButton = document.getElementById('startButton');
+		let joinButton = document.getElementById('joinButton') ;
+		let playCardButton = document.getElementById("playCardButton");
+		let gameId = document.getElementById('game_id');
+		let nameId = document.getElementById('name_id');
 
-		startButton.addEventListener('click', (e) => {
+		startButton.addEventListener('click', (event) => {
 			players = document.querySelector('input[name = "players"]:checked').value;
 
 			fetch(server + "?action=new&name=" + nameId.value + "&players=" + players)
@@ -179,7 +184,7 @@
 		  	
 		});
 
-		joinButton.addEventListener('click', (e) => {
+		joinButton.addEventListener('click', (event) => {
 			req = server + "?action=join&name=" + nameId.value + "&game_id=" + gameId.value;
 			fetch(req)
 		  	.then((response) => {
@@ -190,6 +195,19 @@
 		  	}).catch((error) => {
 		  		console.log(error);
 		  	});
+		});
+
+		playCardButton.addEventListener('click', (event) => {
+				req = server + "?action=playcard&player_id=" +  + "&game_id=" + gameId.value;
+				fetch(req)
+			  	.then((response) => {
+			    		return response.json();
+			  	})
+			  	.then((data) => {
+					displayGameInfo(data);
+			  	}).catch((error) => {
+			  		console.log(error);
+			  	});
 		});
 
 		function displayGameInfo(serverData) {
@@ -205,7 +223,7 @@
 		  	})
 		  	.then((data) => {
 	    		for (const key in data) {
-	    		  gamePage.innerHTML += `<P>${key}: ${object[key]}</P>`;
+	    		  gamePage.innerHTML += `<P class="mdc-typography--body1">${key}: ${object[key]}</P>`;
 	    		}
 		  	}).catch((error) => {
 		  		console.log(error);
