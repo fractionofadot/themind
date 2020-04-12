@@ -128,7 +128,7 @@
 		</div>
 
 		<div id="ord-game-page">
-			<button id="playCardButton" data-pid="" data-gid="" class="mdc-button mdc-button--outlined">
+			<button id="playCardButton" data-pid="" data-sid="" data-gid="" class="mdc-button mdc-button--outlined">
 			  <div class="mdc-button__ripple"></div>
 			  <span class="mdc-button__label">Play Card</span>
 			</button>
@@ -167,6 +167,7 @@
 		let playCardButton = document.getElementById("playCardButton");
 		let gameId = document.getElementById('game_id');
 		let nameId = document.getElementById('name_id');
+		var gameObj = {}
 
 		startButton.addEventListener('click', (event) => {
 			players = document.querySelector('input[name = "players"]:checked').value;
@@ -197,8 +198,10 @@
 		  	});
 		});
 
-		playCardButton.addEventListener('click', (event) => {
-				req = server + "?action=playcard&player_id=" + playCardButton.getAttribute("data-pid") + "&game_id=" + playCardButton.getAttribute("data-gid");
+		playCardButton.addEventListener('click', playCard );
+		function playCard() {
+			console.log("play card");
+				req = server + "?action=playcard&player_id=" + playCardButton.getAttribute("data-pid") + "&game_id=" + playCardButton.getAttribute("data-gid") + "state_id=" + playCardButton.getAttribute("data-sid");
 				fetch(req)
 			  	.then((response) => {
 			    		return response.json();
@@ -209,22 +212,22 @@
 			  	}).catch((error) => {
 			  		console.log(error);
 			  	});
-		});
+		};
 
 		function displayGameInfo(serverData) {
 			let gamePage = document.getElementById("ord-game-page");
 			let loginPage = document.getElementById("ord-login-page")
 			gamePage.style.display = 'block';
 			loginPage.style.display = 'none'
-			playCardButton.setAttribute("data-pid", serverData.player_id);
-			playCardButton.setAttribute("data-gid", serverData.game_id);
-			console.log(serverData);
+						console.log(serverData);
 			req = server + "?action=getstate&player_id=" + serverData.player_id + "&game_id=" + serverData.game_id;
 			fetch(req)
 		  	.then((response) => {
 		    		return response.json();
 		  	})
 		  	.then((data) => {
+				gameObj = data;
+
 	    		for (const key in data) {
 	    		  gamePage.innerHTML += `<P class="mdc-typography--body1"> ${key}: ${data[key]}</P>`;
 
