@@ -201,9 +201,12 @@
 		playCardButton.addEventListener('click', playCard );
 
 		function playCard() {
-			console.log("play card", gameObj);
+			console.log("play card", gameObj.player_id);
+			let pid = gameObj.player_id;
+			let gid = gameObj.game_id;
+			console.log(gid, pid)
 
-				req = server + "?action=playcard&player_id=" + gameObj.player_id + "&game_id=" + gameObj.game_id + "state_id=" + gameObj.state_id;
+				req = server + "?action=playcard&player_id=" + pid + "&game_id=" + gid + "state_id=" + gameObj.state_id;
 				fetch(req)
 			  	.then((response) => {
 			    		return response.json();
