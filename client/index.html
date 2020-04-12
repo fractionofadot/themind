@@ -128,7 +128,7 @@
 		</div>
 
 		<div id="ord-game-page">
-			<button id="playCardButton" ordPlayerId="" class="mdc-button mdc-button--outlined">
+			<button id="playCardButton" ordPlayerId="" ordGameId="" class="mdc-button mdc-button--outlined">
 			  <div class="mdc-button__ripple"></div>
 			  <span class="mdc-button__label">Play Card</span>
 			</button>
@@ -198,7 +198,7 @@
 		});
 
 		playCardButton.addEventListener('click', (event) => {
-				req = server + "?action=playcard&player_id=" +  + "&game_id=" + gameId.value;
+				req = server + "?action=playcard&player_id=" + playCardButton.ordPlayerId + "&game_id=" + playCardButton.ordGameId;
 				fetch(req)
 			  	.then((response) => {
 			    		return response.json();
@@ -215,6 +215,7 @@
 			let loginPage = document.getElementById("ord-login-page")
 			gamePage.style.display = 'block';
 			loginPage.style.display = 'none'
+			playCardButton.ordPlayerId = serverData.player_id;
 			console.log(serverData);
 			req = server + "?action=getstate&player_id=" + serverData.player_id + "&game_id=" + serverData.game_id;
 			fetch(req)
