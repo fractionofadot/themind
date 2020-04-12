@@ -223,7 +223,8 @@
 		  	})
 		  	.then((data) => {
 	    		for (const key in data) {
-	    		  gamePage.innerHTML += `<P class="mdc-typography--body1">${key}: ${object[key]}</P>`;
+	    		  gamePage.innerHTML += `<P class="mdc-typography--body1"> ${key}: ${data[key]}</P>`;
+
 	    		}
 		  	}).catch((error) => {
 		  		console.log(error);
