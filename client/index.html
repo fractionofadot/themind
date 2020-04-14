@@ -172,7 +172,7 @@
 		startButton.addEventListener('click', (event) => {
 			players = document.querySelector('input[name = "players"]:checked').value;
 
-			postData(server, { "action": "new" })
+			postData(server, { action: "new" })
 			  .then((data) => {
 
 			    console.log("posted!",  data); // JSON data parsed by `response.json()` call
