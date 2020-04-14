@@ -106,7 +106,7 @@ class GameServer():
 			action = form["action"].lower()
 		except:
 			args=sys.stdin.read().split('&')
-			self.sendError(args)
+			self.sendError("{}".format(args[0]))
 
 		# if there is a player_id cookie, use it. 
 		cookie = self.getCookie()
