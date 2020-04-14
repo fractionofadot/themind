@@ -2,7 +2,6 @@
 
 import os
 import cgi
-import sys
 import json
 import string
 import random
@@ -102,11 +101,7 @@ class GameServer():
 		}
 
 		form = cgi.FieldStorage()
-		try:
-			action = form["action"].lower()
-		except:
-			self.sendError("{}".format(sys.stdin.read()))
-
+		action = form.getfirst("action", "").lower()
 
 		# if there is a player_id cookie, use it. 
 		cookie = self.getCookie()
