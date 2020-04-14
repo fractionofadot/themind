@@ -117,7 +117,7 @@ class GameServer():
 		if action in valid_requests:
 			valid_requests[action]()
 		else:
-			self.sendError("Invalid action >{}<".format(action))
+			self.sendError("Invalid action")
 
 		self.saveGameDB()
 		self.savePlayerDB()
