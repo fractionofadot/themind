@@ -101,7 +101,7 @@ class GameServer():
 		}
 
 		form = cgi.FieldStorage()
-		action = form.getfirst("action", "").lower()
+		action = form.getfirst("action", "").value.lower()
 
 		# if there is a player_id cookie, use it. 
 		cookie = self.getCookie()
