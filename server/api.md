@@ -10,19 +10,15 @@ When you create a new game, you also create a new player. The API responds with 
 
 ```{'player_id': 'DGQIWAHOLE', 'game_id': 'RPZL'}```
 
-Next, POST the provided ids in order to retreive the game state:
+Next, send GET request using the provided ids in order to retreive the game state:
 ```
-{
-	"action" 	: "getstate",
-	"player_id"	: "ABCDEFGHIJK",
-	"game_id"	: "ABCD"
-}
+?action=getstate&player_id=ABCDEFGHIJK&game_id=ABCD
 ```
 The API responds with the current details of the game, including the player's hand:
 ```
 {"stars": 1, "result": 0, "discard": [], "lives": 2, "players": 2, "blind": false, "levels": 12, "pile": [], "player_id": "DGQIWAHOLE", "level": 1, "state_id": 1586364460.762625, "hand": [90], "game_id": "RPZL"}
 ```
-Whenever the client POSTs a "play" action (`playcard` or `playstar`), it must include the `state_id` to prevent a sort of race condition situation where the game state could change after a play request is sent (which do something the client does not expect).
+Whenever the client GETs a "play" action (`playcard` or `playstar`), it must include the `state_id` to prevent a sort of race condition situation where the game state could change after a play request is sent (which do something the client does not expect).
 
 ## action
 
