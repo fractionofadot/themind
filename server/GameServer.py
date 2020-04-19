@@ -244,7 +244,7 @@ class GameServer():
 	def getCookie(self):
 		if 'HTTP_COOKIE' in os.environ:
 			cookie = cgi.escape( os.environ['HTTP_COOKIE'] )
-			pairs = cookie.split('&')
+			pairs = cookie.split('; ')
 			ids = {
 				"gid" : "", 
 				"pid" : ""
@@ -254,7 +254,8 @@ class GameServer():
 				ids[key] = value
 			return ids
 		else:
-			return None
+				return None
 
 	def setCookie(self, pid, gid):
-		print( "Set-Cookie: pid={}&gid={}".format(pid, gid) )
+		print( "Set-Cookie: pid={}".format(pid) )
+		print( "Set-Cookie: gid={}".format(gid) )
